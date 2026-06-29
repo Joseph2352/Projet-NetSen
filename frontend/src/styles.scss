@@ -72,6 +72,9 @@ a {
   display: grid;
   gap: 1rem;
 }
+.grid > * {
+  min-width: 0;
+}
 
 @media (min-width: 640px) {
   .grid-2 {
