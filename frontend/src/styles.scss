@@ -1,0 +1,254 @@
+/* ============================================================
+   MediRDV - styles globaux
+   Design sobre type "santé" : bleus/teals, beaucoup d'espace,
+   composants réutilisables (cartes, boutons, formulaires).
+   ============================================================ */
+
+:root {
+  --c-primary: #0f766e; /* teal 700 */
+  --c-primary-dark: #115e59;
+  --c-primary-light: #ccfbf1;
+  --c-accent: #2563eb;
+  --c-bg: #f1f5f9;
+  --c-surface: #ffffff;
+  --c-text: #0f172a;
+  --c-muted: #64748b;
+  --c-border: #e2e8f0;
+  --c-danger: #dc2626;
+  --c-success: #16a34a;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+a {
+  color: var(--c-primary);
+  text-decoration: none;
+}
+
+/* ---- Layout ---- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ---- Cartes ---- */
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- Boutons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  background: var(--c-primary);
+  color: #fff;
+}
+.btn:hover:not(:disabled) {
+  background: var(--c-primary-dark);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-outline {
+  background: transparent;
+  color: var(--c-primary);
+  border-color: var(--c-primary);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--c-primary-light);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--c-muted);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--c-bg);
+}
+.btn-danger {
+  background: var(--c-danger);
+}
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+.btn-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+/* ---- Formulaires ---- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+.field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--c-muted);
+}
+input,
+select,
+textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--c-text);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px var(--c-primary-light);
+}
+
+/* ---- Badges / états ---- */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-booked {
+  background: var(--c-primary-light);
+  color: var(--c-primary-dark);
+}
+.badge-cancelled {
+  background: #fee2e2;
+  color: var(--c-danger);
+}
+
+/* ---- Messages ---- */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.alert-error {
+  background: #fee2e2;
+  color: var(--c-danger);
+}
+.alert-success {
+  background: #dcfce7;
+  color: var(--c-success);
+}
+.alert-info {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+/* ---- Tableaux ---- */
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--c-border);
+  font-size: 0.9rem;
+}
+th {
+  color: var(--c-muted);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--c-muted);
+}
+.text-center {
+  text-align: center;
+}
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Pages d'authentification ---- */
+.auth-wrap {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+}
+.auth-title {
+  font-size: 1.5rem;
+}
+.auth-switch {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}

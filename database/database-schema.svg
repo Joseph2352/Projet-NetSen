@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="800" viewBox="0 0 1180 800" font-family="Segoe UI, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .entity-header { fill: #0f766e; }
+      .entity-title { fill: #ffffff; font-size: 15px; font-weight: 700; }
+      .entity-body { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; }
+      .field { font-size: 13px; fill: #1e293b; }
+      .pk { font-size: 13px; fill: #0f172a; font-weight: 700; }
+      .fk { font-size: 13px; fill: #b45309; }
+      .rel { stroke: #475569; stroke-width: 1.6; fill: none; }
+      .card { font-size: 13px; fill: #334155; font-weight: 700; }
+      .legend { font-size: 12px; fill: #475569; }
+    </style>
+  </defs>
+
+  <rect width="1180" height="800" fill="#f8fafc"/>
+  <text x="40" y="34" font-size="22" font-weight="700" fill="#0f766e">MediRDV — Modèle de données (PostgreSQL)</text>
+  <text x="40" y="54" class="legend">Relations 1–N (un côté « 1 » → plusieurs côté « N »).  PK = clé primaire (gras), FK = clé étrangère (orange).</text>
+
+  <!-- ===================== RELATIONS (dessinées avant les boîtes) ===================== -->
+  <!-- Center 1 - N Doctor -->
+  <path class="rel" marker-end="url(#arrow)" d="M160,222 L160,260 L468,290"/>
+  <text x="168" y="240" class="card">1</text>
+  <text x="448" y="284" class="card">N</text>
+
+  <!-- Specialty 1 - N Doctor -->
+  <path class="rel" marker-end="url(#arrow)" d="M570,178 L570,290"/>
+  <text x="556" y="200" class="card">1</text>
+  <text x="556" y="286" class="card">N</text>
+
+  <!-- User 1 - N Appointment -->
+  <path class="rel" marker-end="url(#arrow)" d="M1000,246 L1000,314"/>
+  <text x="1008" y="266" class="card">1</text>
+  <text x="1008" y="310" class="card">N</text>
+
+  <!-- Doctor 1 - N Availability -->
+  <path class="rel" marker-end="url(#arrow)" d="M450,396 L250,396 L160,554"/>
+  <text x="430" y="388" class="card">1</text>
+  <text x="168" y="548" class="card">N</text>
+
+  <!-- Doctor 1 - N Absence -->
+  <path class="rel" marker-end="url(#arrow)" d="M570,490 L570,554"/>
+  <text x="556" y="508" class="card">1</text>
+  <text x="556" y="550" class="card">N</text>
+
+  <!-- Doctor 1 - N Appointment -->
+  <path class="rel" marker-end="url(#arrow)" d="M690,396 L874,400"/>
+  <text x="700" y="388" class="card">1</text>
+  <text x="858" y="392" class="card">N</text>
+
+  <!-- ===================== ENTITE: Center ===================== -->
+  <g>
+    <rect x="40" y="60" width="240" height="30" rx="4" class="entity-header"/>
+    <rect x="40" y="90" width="240" height="132" class="entity-body"/>
+    <text x="160" y="80" text-anchor="middle" class="entity-title">Center</text>
+    <text x="52" y="107" class="pk">id : uuid  (PK)</text>
+    <text x="52" y="129" class="field">name : string</text>
+    <text x="52" y="151" class="field">address : string</text>
+    <text x="52" y="173" class="field">contact : string</text>
+    <text x="52" y="195" class="field">createdAt : datetime</text>
+    <text x="52" y="217" class="field">updatedAt : datetime</text>
+  </g>
+
+  <!-- ===================== ENTITE: Specialty ===================== -->
+  <g>
+    <rect x="450" y="60" width="240" height="30" rx="4" class="entity-header"/>
+    <rect x="450" y="90" width="240" height="88" class="entity-body"/>
+    <text x="570" y="80" text-anchor="middle" class="entity-title">Specialty</text>
+    <text x="462" y="107" class="pk">id : uuid  (PK)</text>
+    <text x="462" y="129" class="field">name : string  (unique)</text>
+    <text x="462" y="151" class="field">createdAt : datetime</text>
+    <text x="462" y="173" class="field">updatedAt : datetime</text>
+  </g>
+
+  <!-- ===================== ENTITE: User ===================== -->
+  <g>
+    <rect x="880" y="60" width="260" height="30" rx="4" class="entity-header"/>
+    <rect x="880" y="90" width="260" height="154" class="entity-body"/>
+    <text x="1010" y="80" text-anchor="middle" class="entity-title">User</text>
+    <text x="892" y="107" class="pk">id : uuid  (PK)</text>
+    <text x="892" y="129" class="field">email : string  (unique)</text>
+    <text x="892" y="151" class="field">password : string  (hash bcrypt)</text>
+    <text x="892" y="173" class="field">fullName : string</text>
+    <text x="892" y="195" class="field">role : Role  (enum)</text>
+    <text x="892" y="217" class="field">createdAt : datetime</text>
+    <text x="892" y="239" class="field">updatedAt : datetime</text>
+  </g>
+
+  <!-- ===================== ENTITE: Doctor ===================== -->
+  <g>
+    <rect x="450" y="300" width="240" height="30" rx="4" class="entity-header"/>
+    <rect x="450" y="330" width="240" height="154" class="entity-body"/>
+    <text x="570" y="320" text-anchor="middle" class="entity-title">Doctor</text>
+    <text x="462" y="347" class="pk">id : uuid  (PK)</text>
+    <text x="462" y="369" class="field">firstName : string</text>
+    <text x="462" y="391" class="field">lastName : string</text>
+    <text x="462" y="413" class="fk">specialtyId : uuid  (FK → Specialty)</text>
+    <text x="462" y="435" class="fk">centerId : uuid  (FK → Center)</text>
+    <text x="462" y="457" class="field">createdAt : datetime</text>
+    <text x="462" y="479" class="field">updatedAt : datetime</text>
+  </g>
+
+  <!-- ===================== ENTITE: Appointment ===================== -->
+  <g>
+    <rect x="880" y="320" width="260" height="30" rx="4" class="entity-header"/>
+    <rect x="880" y="350" width="260" height="176" class="entity-body"/>
+    <text x="1010" y="340" text-anchor="middle" class="entity-title">Appointment</text>
+    <text x="892" y="367" class="pk">id : uuid  (PK)</text>
+    <text x="892" y="389" class="fk">doctorId : uuid  (FK → Doctor)</text>
+    <text x="892" y="411" class="fk">patientId : uuid  (FK → User)</text>
+    <text x="892" y="433" class="field">startTime : datetime</text>
+    <text x="892" y="455" class="field">endTime : datetime</text>
+    <text x="892" y="477" class="field">status : AppointmentStatus</text>
+    <text x="892" y="499" class="field">createdAt : datetime</text>
+    <text x="892" y="521" class="field">updatedAt : datetime</text>
+  </g>
+
+  <!-- ===================== ENTITE: Availability ===================== -->
+  <g>
+    <rect x="40" y="560" width="240" height="30" rx="4" class="entity-header"/>
+    <rect x="40" y="590" width="240" height="110" class="entity-body"/>
+    <text x="160" y="580" text-anchor="middle" class="entity-title">Availability</text>
+    <text x="52" y="607" class="pk">id : uuid  (PK)</text>
+    <text x="52" y="629" class="fk">doctorId : uuid  (FK → Doctor)</text>
+    <text x="52" y="651" class="field">dayOfWeek : int  (0–6)</text>
+    <text x="52" y="673" class="field">startTime : "HH:mm"</text>
+    <text x="52" y="695" class="field">endTime : "HH:mm"</text>
+  </g>
+
+  <!-- ===================== ENTITE: Absence ===================== -->
+  <g>
+    <rect x="450" y="560" width="240" height="30" rx="4" class="entity-header"/>
+    <rect x="450" y="590" width="240" height="154" class="entity-body"/>
+    <text x="570" y="580" text-anchor="middle" class="entity-title">Absence</text>
+    <text x="462" y="607" class="pk">id : uuid  (PK)</text>
+    <text x="462" y="629" class="fk">doctorId : uuid  (FK → Doctor)</text>
+    <text x="462" y="651" class="field">startDate : datetime</text>
+    <text x="462" y="673" class="field">endDate : datetime</text>
+    <text x="462" y="695" class="field">reason : AbsenceReason</text>
+    <text x="462" y="717" class="field">note : string?  (optionnel)</text>
+    <text x="462" y="739" class="field">createdAt : datetime</text>
+  </g>
+
+  <!-- ===================== ENUMS ===================== -->
+  <g>
+    <rect x="880" y="590" width="260" height="30" rx="4" fill="#334155"/>
+    <rect x="880" y="620" width="260" height="110" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="1010" y="610" text-anchor="middle" class="entity-title">Énumérations</text>
+    <text x="892" y="640" class="field" font-weight="700">Role</text>
+    <text x="892" y="658" class="legend">ADMIN · PATIENT</text>
+    <text x="892" y="680" class="field" font-weight="700">AbsenceReason</text>
+    <text x="892" y="698" class="legend">SICKNESS · VACATION · OTHER</text>
+    <text x="892" y="720" class="field" font-weight="700">AppointmentStatus  ·  BOOKED · CANCELLED</text>
+  </g>
+</svg>

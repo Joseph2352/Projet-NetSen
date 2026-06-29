@@ -1,0 +1,32 @@
+<div class="auth-wrap">
+  <div class="card auth-card">
+    <h1 class="auth-title">Créer un compte</h1>
+    <p class="muted">Inscrivez-vous pour prendre rendez-vous.</p>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="fullName">Nom complet</label>
+        <input id="fullName" type="text" formControlName="fullName" placeholder="Jean Dupont" />
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="vous@exemple.com" />
+      </div>
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" formControlName="password" placeholder="6 caractères minimum" />
+      </div>
+      <button class="btn" type="submit" [disabled]="loading()" style="width: 100%">
+        {{ loading() ? 'Création…' : 'Créer mon compte' }}
+      </button>
+    </form>
+
+    <p class="muted auth-switch">
+      Déjà inscrit ? <a routerLink="/login">Se connecter</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="container">
+  <h1 class="page-title">Prendre un rendez-vous</h1>
+
+  @if (message(); as msg) {
+    <div class="alert" [class.alert-success]="msg.type === 'success'" [class.alert-error]="msg.type === 'error'">
+      {{ msg.text }}
+    </div>
+  }
+
+  <!-- Étape 1 & 2 : centre + spécialité -->
+  <div class="card">
+    <div class="grid grid-2">
+      <div class="field">
+        <label>1. Centre médical</label>
+        <select [ngModel]="centerId()" (ngModelChange)="onCenterChange($event)">
+          <option value="">— Choisir un centre —</option>
+          @for (c of centers(); track c.id) {
+            <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label>2. Spécialité</label>
+        <select
+          [ngModel]="specialtyId()"
+          (ngModelChange)="onSpecialtyChange($event)"
+          [disabled]="!centerId()"
+        >
+          <option value="">— Choisir une spécialité —</option>
+          @for (s of specialties(); track s.id) {
+            <option [value]="s.id">{{ s.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Étape 3 : médecins -->
+  @if (specialtyId()) {
+    <section class="step">
+      <h2 class="step-title">3. Médecins disponibles</h2>
+      @if (loadingDoctors()) {
+        <p class="muted">Chargement des médecins…</p>
+      } @else if (doctors().length === 0) {
+        <p class="muted">Aucun médecin pour cette spécialité dans ce centre.</p>
+      } @else {
+        <div class="grid grid-3">
+          @for (d of doctors(); track d.id) {
+            <button
+              type="button"
+              class="doctor-card"
+              [class.selected]="d.id === doctorId()"
+              (click)="selectDoctor(d.id)"
+            >
+              <span class="doctor-avatar">{{ d.firstName[0] }}{{ d.lastName[0] }}</span>
+              <span class="doctor-name">Dr {{ d.firstName }} {{ d.lastName }}</span>
+              <span class="muted">{{ d.specialty?.name }}</span>
+            </button>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Étape 4 : date + créneaux -->
+  @if (doctorId()) {
+    <section class="step">
+      <h2 class="step-title">4. Choisir un créneau</h2>
+      <div class="card">
+        <div class="field" style="max-width: 240px">
+          <label>Date</label>
+          <input
+            type="date"
+            [ngModel]="date()"
+            (ngModelChange)="onDateChange($event)"
+            [min]="date()"
+          />
+        </div>
+
+        @if (loadingSlots()) {
+          <p class="muted">Chargement des créneaux…</p>
+        } @else if (slots().length === 0) {
+          <p class="muted">
+            Aucun créneau disponible ce jour (jour non travaillé, absence du
+            médecin, ou créneaux déjà réservés). Essayez une autre date.
+          </p>
+        } @else {
+          <div class="slots">
+            @for (slot of slots(); track slot.start) {
+              <button
+                type="button"
+                class="slot"
+                [class.selected]="slot.start === selectedSlot()?.start"
+                [disabled]="booking()"
+                (click)="selectSlot(slot)"
+              >
+                {{ slot.label }}
+              </button>
+            }
+          </div>
+
+          <div class="confirm-row">
+            <button
+              type="button"
+              class="btn"
+              [disabled]="!selectedSlot() || booking()"
+              (click)="book()"
+            >
+              {{ booking() ? 'Réservation…' : selectedSlot() ? 'Réserver le créneau de ' + selectedSlot()!.label : 'Choisissez un créneau' }}
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

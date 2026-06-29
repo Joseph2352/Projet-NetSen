@@ -1,0 +1,118 @@
+// MediRDV - schéma de données
+// Doc Prisma : https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PATIENT
+}
+
+enum AbsenceReason {
+  SICKNESS // maladie
+  VACATION // congés
+  OTHER    // autre
+}
+
+enum AppointmentStatus {
+  BOOKED
+  CANCELLED
+}
+
+/// Utilisateur de l'application (patient qui réserve, ou admin qui gère).
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String // hash bcrypt
+  fullName     String
+  role         Role          @default(PATIENT)
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+/// Centre médical : un nom, une adresse, un contact.
+model Center {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  contact   String
+  doctors   Doctor[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Spécialité médicale, rattachée à un ou plusieurs médecins.
+model Specialty {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  doctors   Doctor[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Médecin : nom, une spécialité et un centre d'affectation.
+model Doctor {
+  id             String         @id @default(uuid())
+  firstName      String
+  lastName       String
+  specialtyId    String
+  specialty      Specialty      @relation(fields: [specialtyId], references: [id])
+  centerId       String
+  center         Center         @relation(fields: [centerId], references: [id])
+  availabilities Availability[]
+  absences       Absence[]
+  appointments   Appointment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+/// Plage horaire de travail récurrente d'un médecin pour un jour de la semaine.
+/// Les créneaux réservables sont générés à partir de ces plages (pas de 30 min).
+model Availability {
+  id        String @id @default(uuid())
+  doctorId  String
+  doctor    Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dayOfWeek Int // 0 = dimanche ... 6 = samedi
+  startTime String // format "HH:mm", ex "09:00"
+  endTime   String // format "HH:mm", ex "17:00"
+
+  @@unique([doctorId, dayOfWeek, startTime, endTime])
+}
+
+/// Absence d'un médecin (maladie, congés, autre). Bloque les créneaux sur la période.
+model Absence {
+  id        String        @id @default(uuid())
+  doctorId  String
+  doctor    Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  startDate DateTime // début (inclus)
+  endDate   DateTime // fin (inclus)
+  reason    AbsenceReason
+  note      String?
+  createdAt DateTime      @default(now())
+
+  @@index([doctorId, startDate, endDate])
+}
+
+/// Rendez-vous réservé par un patient avec un médecin sur un créneau précis.
+model Appointment {
+  id        String            @id @default(uuid())
+  doctorId  String
+  doctor    Doctor            @relation(fields: [doctorId], references: [id])
+  patientId String
+  patient   User              @relation(fields: [patientId], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  status    AppointmentStatus @default(BOOKED)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([doctorId, startTime])
+}

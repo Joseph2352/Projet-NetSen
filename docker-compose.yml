@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:17
+    container_name: medirdv-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: medirdv
+      POSTGRES_PASSWORD: medirdv
+      POSTGRES_DB: medirdv
+    ports:
+      - "5432:5432"
+    volumes:
+      - medirdv_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medirdv -d medirdv"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  medirdv_pgdata:

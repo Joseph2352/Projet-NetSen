@@ -1,0 +1,266 @@
+<div class="container">
+  <h1 class="page-title">Administration</h1>
+
+  <div class="tabs">
+    <button class="tab" [class.active]="tab() === 'centers'" (click)="setTab('centers')">Centres</button>
+    <button class="tab" [class.active]="tab() === 'specialties'" (click)="setTab('specialties')">Spécialités</button>
+    <button class="tab" [class.active]="tab() === 'doctors'" (click)="setTab('doctors')">Médecins</button>
+    <button class="tab" [class.active]="tab() === 'absences'" (click)="setTab('absences')">Absences</button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <!-- ================= CENTRES ================= -->
+  @if (tab() === 'centers') {
+    <div class="grid grid-2">
+      <div class="card">
+        <h2 class="step-title">{{ centerForm.id ? 'Modifier' : 'Ajouter' }} un centre</h2>
+        <form (ngSubmit)="saveCenter()">
+          <div class="field">
+            <label>Nom</label>
+            <input [(ngModel)]="centerForm.name" name="name" required />
+          </div>
+          <div class="field">
+            <label>Adresse</label>
+            <input [(ngModel)]="centerForm.address" name="address" required />
+          </div>
+          <div class="field">
+            <label>Contact</label>
+            <input [(ngModel)]="centerForm.contact" name="contact" required />
+          </div>
+          <div class="row-actions">
+            <button class="btn" type="submit">{{ centerForm.id ? 'Enregistrer' : 'Ajouter' }}</button>
+            @if (centerForm.id) {
+              <button class="btn btn-ghost" type="button" (click)="centerForm = emptyCenter()">Annuler</button>
+            }
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 class="step-title">Centres ({{ centers().length }})</h2>
+        <div class="table-wrap">
+        <table>
+          <tbody>
+            @for (c of centers(); track c.id) {
+              <tr>
+                <td>
+                  <strong>{{ c.name }}</strong><br />
+                  <span class="muted">{{ c.address }} · {{ c.contact }}</span>
+                </td>
+                <td class="text-right">
+                  <div class="row-actions">
+                    <button class="btn btn-outline btn-sm" (click)="editCenter(c)">Éditer</button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteCenter(c)">Suppr.</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ================= SPECIALITES ================= -->
+  @if (tab() === 'specialties') {
+    <div class="grid grid-2">
+      <div class="card">
+        <h2 class="step-title">{{ specialtyForm.id ? 'Modifier' : 'Ajouter' }} une spécialité</h2>
+        <form (ngSubmit)="saveSpecialty()">
+          <div class="field">
+            <label>Nom</label>
+            <input [(ngModel)]="specialtyForm.name" name="sname" required />
+          </div>
+          <div class="row-actions">
+            <button class="btn" type="submit">{{ specialtyForm.id ? 'Enregistrer' : 'Ajouter' }}</button>
+            @if (specialtyForm.id) {
+              <button class="btn btn-ghost" type="button" (click)="specialtyForm = { name: '' }">Annuler</button>
+            }
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 class="step-title">Spécialités ({{ specialties().length }})</h2>
+        <div class="table-wrap">
+        <table>
+          <tbody>
+            @for (s of specialties(); track s.id) {
+              <tr>
+                <td>{{ s.name }}</td>
+                <td class="text-right">
+                  <div class="row-actions">
+                    <button class="btn btn-outline btn-sm" (click)="editSpecialty(s)">Éditer</button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteSpecialty(s)">Suppr.</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ================= MEDECINS ================= -->
+  @if (tab() === 'doctors') {
+    <div class="card" style="margin-bottom: 1rem">
+      <h2 class="step-title">{{ doctorForm.id ? 'Modifier' : 'Ajouter' }} un médecin</h2>
+      <form (ngSubmit)="saveDoctor()">
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Prénom</label>
+            <input [(ngModel)]="doctorForm.firstName" name="firstName" required />
+          </div>
+          <div class="field">
+            <label>Nom</label>
+            <input [(ngModel)]="doctorForm.lastName" name="lastName" required />
+          </div>
+          <div class="field">
+            <label>Spécialité</label>
+            <select [(ngModel)]="doctorForm.specialtyId" name="specialtyId" required>
+              <option value="">— Choisir —</option>
+              @for (s of specialties(); track s.id) {
+                <option [value]="s.id">{{ s.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Centre d'affectation</label>
+            <select [(ngModel)]="doctorForm.centerId" name="centerId" required>
+              <option value="">— Choisir —</option>
+              @for (c of centers(); track c.id) {
+                <option [value]="c.id">{{ c.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="avail-header">
+          <label>Disponibilités (créneaux générés par pas de 30 min)</label>
+          <div class="row-actions">
+            <button class="btn btn-outline btn-sm" type="button" (click)="applyWeekdayTemplate()">Lun–Ven 9h-12h / 14h-17h</button>
+            <button class="btn btn-ghost btn-sm" type="button" (click)="addAvailability()">+ Plage</button>
+          </div>
+        </div>
+        @for (a of doctorAvailabilities(); track $index) {
+          <div class="avail-row">
+            <select [(ngModel)]="a.dayOfWeek" [name]="'day' + $index">
+              @for (d of weekDays; track d.value) {
+                <option [ngValue]="d.value">{{ d.label }}</option>
+              }
+            </select>
+            <input type="time" [(ngModel)]="a.startTime" [name]="'start' + $index" />
+            <span>→</span>
+            <input type="time" [(ngModel)]="a.endTime" [name]="'end' + $index" />
+            <button class="btn btn-ghost btn-sm" type="button" (click)="removeAvailability($index)">✕</button>
+          </div>
+        }
+
+        <div class="row-actions" style="margin-top: 1rem">
+          <button class="btn" type="submit">{{ doctorForm.id ? 'Enregistrer' : 'Ajouter' }}</button>
+          @if (doctorForm.id) {
+            <button class="btn btn-ghost" type="button" (click)="resetDoctorForm()">Annuler</button>
+          }
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 class="step-title">Médecins ({{ doctors().length }})</h2>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Médecin</th><th>Spécialité</th><th>Centre</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (d of doctors(); track d.id) {
+            <tr>
+              <td>Dr {{ d.firstName }} {{ d.lastName }}</td>
+              <td>{{ d.specialty?.name }}</td>
+              <td>{{ d.center?.name }}</td>
+              <td class="text-right">
+                <div class="row-actions">
+                  <button class="btn btn-outline btn-sm" (click)="editDoctor(d)">Éditer</button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteDoctor(d)">Suppr.</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      </div>
+    </div>
+  }
+
+  <!-- ================= ABSENCES ================= -->
+  @if (tab() === 'absences') {
+    <div class="grid grid-2">
+      <div class="card">
+        <h2 class="step-title">Déclarer une absence</h2>
+        <form (ngSubmit)="saveAbsence()">
+          <div class="field">
+            <label>Médecin</label>
+            <select [(ngModel)]="absenceForm.doctorId" name="adoctor" required>
+              <option value="">— Choisir —</option>
+              @for (d of doctors(); track d.id) {
+                <option [value]="d.id">Dr {{ d.firstName }} {{ d.lastName }}</option>
+              }
+            </select>
+          </div>
+          <div class="grid grid-2">
+            <div class="field">
+              <label>Du</label>
+              <input type="date" [(ngModel)]="absenceForm.startDate" name="astart" required />
+            </div>
+            <div class="field">
+              <label>Au</label>
+              <input type="date" [(ngModel)]="absenceForm.endDate" name="aend" required />
+            </div>
+          </div>
+          <div class="field">
+            <label>Motif</label>
+            <select [(ngModel)]="absenceForm.reason" name="areason">
+              @for (r of reasons; track r.value) {
+                <option [value]="r.value">{{ r.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Note (optionnel)</label>
+            <input [(ngModel)]="absenceForm.note" name="anote" />
+          </div>
+          <button class="btn" type="submit">Enregistrer l'absence</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 class="step-title">Absences ({{ absences().length }})</h2>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Médecin</th><th>Période</th><th>Motif</th><th></th></tr>
+          </thead>
+          <tbody>
+            @for (a of absences(); track a.id) {
+              <tr>
+                <td>Dr {{ a.doctor?.firstName }} {{ a.doctor?.lastName }}</td>
+                <td>{{ a.startDate | date: 'd MMM' : 'UTC' }} → {{ a.endDate | date: 'd MMM y' : 'UTC' }}</td>
+                <td>{{ reasonLabel(a.reason) }}</td>
+                <td class="text-right">
+                  <button class="btn btn-danger btn-sm" (click)="deleteAbsence(a)">Suppr.</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>

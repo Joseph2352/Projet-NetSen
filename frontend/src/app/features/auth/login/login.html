@@ -1,0 +1,28 @@
+<div class="auth-wrap">
+  <div class="card auth-card">
+    <h1 class="auth-title">Connexion</h1>
+    <p class="muted">Accédez à votre espace MediRDV.</p>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="vous@exemple.com" />
+      </div>
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" formControlName="password" placeholder="••••••••" />
+      </div>
+      <button class="btn" type="submit" [disabled]="loading()" style="width: 100%">
+        {{ loading() ? 'Connexion…' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <p class="muted auth-switch">
+      Pas encore de compte ? <a routerLink="/register">Créer un compte</a>
+    </p>
+  </div>
+</div>
